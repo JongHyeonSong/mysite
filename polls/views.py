@@ -3,6 +3,7 @@ from django.http import HttpResponse,Http404,HttpResponseRedirect
 from .models import Question,Choice
 from django.template import loader
 from django.views import generic
+from django.utils import timezone
 # Create your views here.
 
 class IndexView(generic.ListView):
@@ -11,8 +12,12 @@ class IndexView(generic.ListView):
 
     def get_queryset(self):
         """ 최근5개만 리턴함"""
-        return Question.objects.order_by('-pub_date')[:5]
-
+        return Question.objects.filter(
+            pub_date__lte=timezone.now()).order_by('-pub_date')[:5] 
+            #__lte = less than equal
+            # Question.objects.filter (pub_date__lte = timezone.now ())는 
+            # timezone.now보다 pub_date가 작거나 같은 Question을 포함하는 
+            # queryset을 반환합니다.
 class DetailView(generic.DetailView):
     model = Question
     template_name = 'polls/detail.html'
